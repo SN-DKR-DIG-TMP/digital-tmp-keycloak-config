@@ -13,7 +13,7 @@ public class UserManagerConfiguration {
     public @Value("${keycloakadminclient.server-url}") String keycloakServerUrl;
     public @Value("${keycloakadminclient.http.proxy.enable:false}") boolean keycloakAdminclientHttpProxyEnable;
     public @Value("${keycloakadminclient.http.proxy.host:proxy}") String keycloakAdminclientHttpProxyHost;
-    public @Value("${keycloakadminclient.http.proxy.port:3128}") Integer keycloakAdminclientHttpProxyPort;
+    public @Value("${keycloakadminclient.http.proxy.port:2828}") Integer keycloakAdminclientHttpProxyPort;
     public @Value("${keycloakadminclient.http.poolsize:5}") Integer keycloakAdminclientProxyHttpPoolSize;
     public @Value("${keycloakadminclient.http.sockettimeout:-1}") long keycloakAdminclientHttpSocketTimeout;
     public @Value("${keycloakadminclient.http.establishConnectionTimeout:-1}") long keycloakAdminclientHttpEstablishConnectionTimeout;
