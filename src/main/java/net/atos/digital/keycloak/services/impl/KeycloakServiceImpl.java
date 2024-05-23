@@ -15,6 +15,7 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -164,8 +165,19 @@ public class KeycloakServiceImpl implements KeycloakService {
     public void saveRoleRepresentationsInUser(String keycloakRealm, String keyCloakUserId, RoleRepresentation roleRepresentation) {
 
         List<RoleRepresentation> currentRoles = keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().listAll();
+        /* Remove current role*/
         keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().remove(currentRoles);
-        keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().add(List.of(roleRepresentation));
+
+        var representations = new ArrayList<RoleRepresentation>();
+
+        /* Add keycloak default role for realm*/
+        var defaultRole = getRoleRepresentationsByRealmAndNames(keycloakRealm, "default-roles-" + keycloakRealm.toLowerCase());
+
+        representations.add(defaultRole);
+        representations.add(roleRepresentation);
+
+        keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().add(representations);
+
 
         log.info("saveRoleRepresentationsInUser end ok - keyCloakUserId: {}", keyCloakUserId);
     }
