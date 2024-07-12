@@ -14,7 +14,7 @@
 	<name>digital-tmp-keycloak-config</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<keycloak.version>20.0.3</keycloak.version>
+		<keycloak.version>25.0.1</keycloak.version>
 		<resteasy.version>3.0.12.Final</resteasy.version>
 		<resteasy.jackson.version>3.0.14.Final</resteasy.jackson.version>
 		<java.version>21</java.version>

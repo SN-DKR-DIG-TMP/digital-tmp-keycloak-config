@@ -1,5 +1,7 @@
 package net.atos.digital.keycloak.configurations;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.client.ClientBuilder;
 import net.atos.digital.keycloak.properties.KeycloakProperties;
 import net.atos.digital.keycloak.properties.UserManagerConfiguration;
 
@@ -18,8 +20,6 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.client.ClientBuilder;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
