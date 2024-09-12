@@ -121,6 +121,32 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
 
     }
 
+    public D disableOrEnableKeycloakUser(D user) {
+
+        UserKeycloak userKeycloak = abstractUserService.asUserKeycloak(user);
+
+        /* Checking if userEmailAddress is not already used by another */
+        checkUserEmailAddressUnity(userKeycloak, user.getUserId());
+
+        /* Getting roleRepresentations */
+        var roleRepresentation = keycloakService.getRoleRepresentationsByRealmAndNames(userKeycloak.userRealm(), userKeycloak.roleName());
+
+        /* Updating KEYCLOAK user */
+        keycloakService.disableOrEnableKeycloakUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), user.isEnable());
+
+        /* Updating KEYCLOAK roles */
+        keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), roleRepresentation);
+
+        /* Saving user */
+        var savedUser  = abstractUserService.saveUser(user);
+
+        log.info("disableOrEnableUser end ok - userId: {}", savedUser.getUserId());
+        log.trace("disableOrEnableUser end ok - user: {}", savedUser);
+
+        return savedUser;
+
+    }
+
     private void checkUserEmailAddressUnity(UserKeycloak userKeycloak) {
 
         /* Checking if resource already exists */
@@ -152,7 +178,6 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         } catch(Exception ex) {
 
             /* Deleting the user in keycloak server */
-            //keycloakService.deleteKeycloakUser(savedUser.getUserRealm(), keycloakUserIdentifier);
             deleteUser(savedUser.getUserId());
             throw ex;
         }

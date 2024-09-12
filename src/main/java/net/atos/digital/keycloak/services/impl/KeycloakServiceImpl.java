@@ -229,7 +229,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         if (!keycloakClientRepresentationsList.isEmpty()) {
 
             /* Setting client resource */
-            var keycloakClientRepresentation = keycloakClientRepresentationsList.get(0);
+            var keycloakClientRepresentation = keycloakClientRepresentationsList.getFirst();
 
             /* Getting KEYCLOAK "user" resource */
             var keycloakUserResource = keycloak.realm(keycloakRealm).users().get(keycloakUserIdentifier);
@@ -246,6 +246,25 @@ public class KeycloakServiceImpl implements KeycloakService {
         log.info("sendEmailActions end ok - keycloakClientId: {}, keycloakUserIdentifier: {}", clientId, keycloakUserIdentifier);
         log.trace("sendEmailActions end ok - emailActionsList: {}", emailActionsList);
 
+    }
+
+    @Override
+    public void disableOrEnableKeycloakUser(String keycloakRealm, String userKeycloakId, boolean toEnable) {
+
+        /* Getting KEYCLOAK "user" representation */
+        var keycloakUser = keycloak.realm(keycloakRealm).users().get(userKeycloakId).toRepresentation();
+
+        /* Enable or disable user */
+        keycloakUser.setEnabled(toEnable);
+
+        /* Getting KEYCLOAK "user" resource */
+        var keycloakUserResource = keycloak.realm(keycloakRealm).users().get(userKeycloakId);
+
+        /* Updating KEYCLOAK "user" */
+        keycloakUserResource.update(keycloakUser);
+
+        log.info("DisableOrEnableKeycloakUser end ok  - keycloakUserIdentifier: {}", userKeycloakId);
+        log.trace("DisableOrEnableKeycloakUser end ok - user: {}", keycloakUser);
     }
 
     private void fillAttributes(UserKeycloak user, UserRepresentation keycloakUser) {
