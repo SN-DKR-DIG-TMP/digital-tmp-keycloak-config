@@ -25,4 +25,6 @@ public interface KeycloakService {
     RoleRepresentation getRoleRepresentationsByRealmAndNames(String keycloakRealm, String name);
 
     void sendEmailActions(String keycloakRealm,  String clientId, String keycloakUserIdentifier, List<String> emailActionsList);
+
+    void disableOrEnableKeycloakUser(String keycloakRealm, String userKeycloakId, boolean isEnable);
 }
