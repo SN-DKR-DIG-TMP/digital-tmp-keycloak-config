@@ -65,6 +65,13 @@ public class KeycloakConfiguration {
     private Keycloak initKeycloak(UserManagerConfiguration userManagerConfiguration, KeycloakProperties.Realm realm) {
         ResteasyClient client = createResteasyClient(userManagerConfiguration);
 
+        log.info("keycloakServerUrl {}", userManagerConfiguration.keycloakServerUrl);
+        log.info("realm {}", realm.realm());
+        log.info("clientId {}", realm.clientId());
+        log.info("user {}", realm.user());
+        log.info("password {}", realm.password());
+        log.info("client {}", client);
+
         return KeycloakBuilder.builder()
                 .serverUrl(userManagerConfiguration.keycloakServerUrl)
                 .realm(realm.realm())
