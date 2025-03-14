@@ -65,7 +65,10 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         if (StringUtils.isNotEmpty(userKeycloak.userPassword())) {
             try {
                 /* Setting KEYCLOAK user password */
-                keycloakService.setKeycloakUserPassword(keycloakRealm, keycloakUserIdentifier, userKeycloak.userPassword(), true);
+                keycloakService.setKeycloakUserPassword(keycloakRealm,
+                        keycloakUserIdentifier,
+                        userKeycloak.userPassword(),
+                        userManagerConfiguration.withTemporaryPassword);
             } catch(Exception ex) {
                 /* Deleting the user in keycloak server */
                 keycloakService.deleteKeycloakUser(keycloakRealm, keycloakUserIdentifier);

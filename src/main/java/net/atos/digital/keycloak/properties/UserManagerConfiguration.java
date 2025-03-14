@@ -22,6 +22,7 @@ public class UserManagerConfiguration {
     /* Account */
     public @Value("${account.creation.emailActionsList}") String emailActionsListString;
     public @Value("${account.creation.sendemail}") Boolean isEmailActionsActive;
+    public @Value("${account.creation.withTemporaryPassword:true}") Boolean withTemporaryPassword;
 
     /* Keycloak Users */
     public @Value("${keycloak.users.active}") Boolean isKeycloakUsersActive;
