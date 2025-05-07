@@ -1,19 +1,13 @@
-
 # Changelog
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Toutes les modifications notables de ce projet seront documentées dans ce fichier.
 
-- [JIRA xxxx](https://jira.worldline.com/browse/MTST2UGRE-xxxx) -
+Le format est inspiré de [Keep a Changelog](https://keepachangelog.com/) et ce projet suit [Semantic Versioning](https://semver.org/).
 
 ## [UnReleased]
 ### Added
-### Changed
-### Fixed
 
-## [1.1.0] 12/12/2024
-- Initialisation du projet
-- Ajout de la documentation pour intégrer le package sur un projet
-- Création utilisateur
-- Création Role
+### Changed
+- Configure pipeline from template. [DTKG-configure-pipeline-template](https://msdevopsjira.fsc.atos-services.net/browse/DTKG-configure-pipeline-template)
+
+### Fixed
