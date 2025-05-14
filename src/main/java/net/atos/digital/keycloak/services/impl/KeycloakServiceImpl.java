@@ -89,7 +89,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void updateKeycloakUser(String keycloakRealm, UserKeycloak user) {
+    public void updateKeycloakUser(String keycloakRealm, UserKeycloak user, boolean isTemporaryPassword) {
 
         /* Getting KEYCLOAK "user" representation */
         var keycloakUser = keycloak.realm(keycloakRealm).users().get(user.userKeycloakId()).toRepresentation();
@@ -121,7 +121,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         /* If user password valued */
         if (user.userPassword() != null) {
             /* Resetting password */
-            setKeycloakUserPassword(keycloakRealm, user.userKeycloakId(), user.userPassword(), true);
+            setKeycloakUserPassword(keycloakRealm, user.userKeycloakId(), user.userPassword(), isTemporaryPassword);
         }
 
         log.info("updateKeycloakUser end ok  - keycloakUserIdentifier: {}", user.userKeycloakId());
