@@ -10,7 +10,7 @@ public interface KeycloakService {
 
     String createKeycloakUser(String keycloakRealm, UserKeycloak user);
 
-    void updateKeycloakUser(String keycloakRealm, UserKeycloak user);
+    void updateKeycloakUser(String keycloakRealm, UserKeycloak user, boolean isTemporaryPassword);
 
     void deleteKeycloakUser(String keycloakRealm, String keycloakUserIdentifier);
 
