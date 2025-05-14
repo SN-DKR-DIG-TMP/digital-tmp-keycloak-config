@@ -32,7 +32,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         this.userManagerConfiguration = userManagerConfiguration;
     }
 
-    public D createUser(String keycloakRealm, String clientId, D user) {
+    public D createUser(String keycloakRealm, String clientId, D user, boolean isTemporaryPassword) {
 
         UserKeycloak userKeycloak = abstractUserService.asUserKeycloak(user);
 
@@ -65,7 +65,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         if (StringUtils.isNotEmpty(userKeycloak.userPassword())) {
             try {
                 /* Setting KEYCLOAK user password */
-                keycloakService.setKeycloakUserPassword(keycloakRealm, keycloakUserIdentifier, userKeycloak.userPassword(), true);
+                keycloakService.setKeycloakUserPassword(keycloakRealm, keycloakUserIdentifier, userKeycloak.userPassword(), isTemporaryPassword);
             } catch(Exception ex) {
                 /* Deleting the user in keycloak server */
                 keycloakService.deleteKeycloakUser(keycloakRealm, keycloakUserIdentifier);
@@ -95,7 +95,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
 
     }
 
-    public D updateUser(D user) {
+    public D updateUser(D user, boolean isTemporaryPassword) {
 
         UserKeycloak userKeycloak = abstractUserService.asUserKeycloak(user);
 
@@ -106,7 +106,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         var roleRepresentation = keycloakService.getRoleRepresentationsByRealmAndNames(userKeycloak.userRealm(), userKeycloak.roleName());
 
         /* Updating KEYCLOAK user */
-        keycloakService.updateKeycloakUser(userKeycloak.userRealm(), userKeycloak);
+        keycloakService.updateKeycloakUser(userKeycloak.userRealm(), userKeycloak, isTemporaryPassword);
 
         /* Updating KEYCLOAK roles */
         keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), roleRepresentation);
