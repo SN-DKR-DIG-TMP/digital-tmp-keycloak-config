@@ -10,6 +10,7 @@ import net.atos.digital.keycloak.properties.UserManagerConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,7 +57,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         if(Objects.nonNull(roleRepresentation)) {
             log.info(" Getting role end ok - keycloakUserIdentifier: {}", keycloakUserIdentifier);
             //only if roles are specified, if not, default roles are attributed by keycloak
-            keycloakService.saveRoleRepresentationsInUser(keycloakRealm, keycloakUserIdentifier, roleRepresentation);
+            keycloakService.saveRoleRepresentationsInUser(keycloakRealm, keycloakUserIdentifier, Collections.singletonList(roleRepresentation));
 
             log.info(" Saving role end ok - keycloakUserIdentifier: {}", keycloakUserIdentifier);
         }
@@ -109,7 +110,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         keycloakService.updateKeycloakUser(userKeycloak.userRealm(), userKeycloak, isTemporaryPassword);
 
         /* Updating KEYCLOAK roles */
-        keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), roleRepresentation);
+        keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), Collections.singletonList(roleRepresentation));
 
         /* Saving user */
         var savedUser  = abstractUserService.saveUser(user);
@@ -135,7 +136,7 @@ public class KeycloakUserService<E extends UserEntityModel, D extends UserDtoMod
         keycloakService.disableOrEnableKeycloakUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), user.isEnable());
 
         /* Updating KEYCLOAK roles */
-        keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), roleRepresentation);
+        keycloakService.saveRoleRepresentationsInUser(userKeycloak.userRealm(), userKeycloak.userKeycloakId(), Collections.singletonList(roleRepresentation));
 
         /* Saving user */
         var savedUser  = abstractUserService.saveUser(user);
