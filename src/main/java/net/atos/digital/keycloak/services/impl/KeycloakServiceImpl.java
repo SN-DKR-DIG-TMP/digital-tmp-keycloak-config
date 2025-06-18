@@ -162,7 +162,7 @@ public class KeycloakServiceImpl implements KeycloakService {
     }
 
     @Override
-    public void saveRoleRepresentationsInUser(String keycloakRealm, String keyCloakUserId, RoleRepresentation roleRepresentation) {
+    public void saveRoleRepresentationsInUser(String keycloakRealm, String keyCloakUserId, List<RoleRepresentation> roleRepresentations) {
 
         List<RoleRepresentation> currentRoles = keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().listAll();
         /* Remove current role*/
@@ -174,7 +174,7 @@ public class KeycloakServiceImpl implements KeycloakService {
         var defaultRole = getRoleRepresentationsByRealmAndNames(keycloakRealm, "default-roles-" + keycloakRealm.toLowerCase());
 
         representations.add(defaultRole);
-        representations.add(roleRepresentation);
+        representations.addAll(roleRepresentations);
 
         keycloak.realm(keycloakRealm).users().get(keyCloakUserId).roles().realmLevel().add(representations);
 

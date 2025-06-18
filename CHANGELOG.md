@@ -7,6 +7,7 @@ Le format est inspiré de [Keep a Changelog](https://keepachangelog.com/) et ce 
 ## Unreleased
 ### Added
 - Add permanent password on create and update user ([permanent](https://msdevopsjira.fsc.atos-services.net/browse/add-permanent))
+- Multiple role from userKeycloak. [DTKG-multiple-role-userKeycloak](https://msdevopsjira.fsc.atos-services.net/browse/DTKG-configure-pipeline-template)
 
 ## 1.2.0 - 2025-05-07
 ### Changed

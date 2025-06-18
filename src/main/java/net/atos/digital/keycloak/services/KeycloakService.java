@@ -16,7 +16,7 @@ public interface KeycloakService {
 
     void setKeycloakUserPassword(String keycloakRealm, String keycloakUserIdentifier, String keycloakUserPassword, boolean temporary);
 
-    void saveRoleRepresentationsInUser(String keycloakRealm, String keyCloakUserId, RoleRepresentation roleRepresentation);
+    void saveRoleRepresentationsInUser(String keycloakRealm, String keyCloakUserId, List<RoleRepresentation> roleRepresentations);
 
     RoleRepresentation createKeycloakRole(String keycloakRealm, String roleName, String roleDescription);
 
