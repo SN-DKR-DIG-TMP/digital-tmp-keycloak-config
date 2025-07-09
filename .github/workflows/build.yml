@@ -1,54 +1,25 @@
-name: Pipeline project
+name: Publish to GitHub Packages
 
 on:
   push:
-    branches:
-      - '**'  # écouter tous les push
-  pull_request:
-    branches:
-      - '**'  # écouter toutes les PR
-  workflow_dispatch:
-    inputs:
-      build_maven:
-        description: 'Enabled to build maven'
-        required: false
-        type: boolean
-        default: false
-      build_image:
-        description: 'Enabled to build docker image'
-        required: false
-        type: boolean
-        default: false
-      PRODUCT_RELEASE_VERSION:
-        description: Version du projet à releaser
-        required: false
-        type: string
-        default: ""
-      released:
-        description: Générer release
-        required: false
-        default: false
-        type: boolean
+    branches: gtb-keycloak
 
 jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-  call:
-    uses: SN-DKR-DIG-TMP/digital-tmp-workflow-templates/.github/workflows/template-back-global.yml@main
-    with:
-      docker_owner: 'sn-dkr-dig-tmp'
-      docker_registry: ghcr.io
-      docker_image_name: digital-tmp-keycloak-config
-      workflow_file: 'build.yml'
-      environment_approved: 'manual'
-      docker_build: false
-      enabled_verification_changelog: true
-      released: ${{ github.event_name == 'workflow_dispatch' && inputs.released || false }}
-      build_maven: ${{ github.event_name == 'workflow_dispatch' && inputs.build_maven || false }}
-      build_image: false
-      PRODUCT_RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.PRODUCT_RELEASE_VERSION || '' }}
-    secrets:
-      GITHUB_USERNAME: 'SN-DKR-DIG-TMP'
-      CUSTOM_GITHUB_TOKEN: ${{ secrets.MAVEN_PAT }}
-      MAVEN_PAT: ${{ secrets.MAVEN_PAT }}
-      docker_registry_user: ${{ github.actor }}
-      docker_registry_password: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Deploy to GitHub Packages
+      run: mvn deploy -s settings.xml
+      env:
+        GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
