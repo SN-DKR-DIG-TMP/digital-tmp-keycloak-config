@@ -1,11 +1,11 @@
-name: Publish to GitHub Packages
+name: Build and Test
 
 on:
   push:
     branches: gtb-keycloak
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -18,8 +18,8 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
 
-    - name: Deploy to GitHub Packages
-      run: mvn deploy -s settings.xml
+    - name: Build with Maven using GitHub Packages settings
+      run: mvn clean install -s .github/settings.xml
       env:
         GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
