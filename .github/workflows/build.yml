@@ -1,39 +1,17 @@
-name: Deploy Maven package on tag (keycloak-gtb branch)
+name: Deploy Maven SNAPSHOT
 
 on:
   push:
-    tags:
-      - 'v1.1.0'
+    branches:
+      - keycloak-gtb
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-snapshot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Check if tag points to commit in keycloak-gtb branch
-        id: check_branch
-        run: |
-          # Récupère le SHA du commit pointé par le tag
-          TAG_COMMIT=$(git rev-parse $GITHUB_REF)
-          echo "Tag commit: $TAG_COMMIT"
-          # Vérifie si ce commit est dans la branche keycloak-gtb
-          if git branch --contains $TAG_COMMIT | grep -q "keycloak-gtb"; then
-            echo "Commit is in keycloak-gtb branch."
-            echo "continue=true" >> $GITHUB_OUTPUT
-          else
-            echo "Commit is NOT in keycloak-gtb branch. Exiting."
-            echo "continue=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Fail if not on keycloak-gtb branch
-        if: steps.check_branch.outputs.continue != 'true'
-        run: |
-          echo "This tag is not on keycloak-gtb branch. Stopping workflow."
-          exit 1
-
       - name: Set up JDK 21
-        if: steps.check_branch.outputs.continue == 'true'
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -41,8 +19,7 @@ jobs:
           server-id: github
           settings-path: ${{ github.workspace }}/.github/maven
 
-      - name: Build and deploy to GitHub Packages
-        if: steps.check_branch.outputs.continue == 'true'
+      - name: Build and deploy snapshot to GitHub Packages
         run: mvn clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
