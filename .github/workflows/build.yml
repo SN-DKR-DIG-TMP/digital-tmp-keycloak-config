@@ -52,7 +52,7 @@ jobs:
 
     - name: Build and push Docker image
       run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/digital-tmp-keycloak-config:${GITHUB_REF##*/}
+        IMAGE_NAME=ghcr.io/${{ github.repository_owner.toLowerCase() }}/digital-tmp-keycloak-config:${GITHUB_REF##*/}
         docker build -t $IMAGE_NAME .
         docker push $IMAGE_NAME
       env:
