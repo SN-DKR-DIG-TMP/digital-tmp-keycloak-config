@@ -1,25 +1,44 @@
-name: Deploy Maven SNAPSHOT
+name: Publish Release to GitHub Packages
 
 on:
   push:
+    tags:
+      - 'v1.1.0'         # déclenche sur un tag de type vX.Y.Z, ex: v1.1.0
     branches:
-      - keycloak-gtb
+      - keycloak-gtb      # optionnel, si tu veux déclencher uniquement sur cette branche
 
 jobs:
-  build-and-deploy-snapshot:
+  deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Set up JDK 21
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 21 and Maven settings
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '21'
-          server-id: github
+          distribution: temurin
+          java-version: 21
+          server-id: github                # correspond à <id>github</id> dans pom.xml
           settings-path: ${{ github.workspace }}/.github/maven
 
-      - name: Build and deploy snapshot to GitHub Packages
+      - name: Configure GitHub Packages authentication
+        run: |
+          mkdir -p ${{ github.workspace }}/.github/maven
+          cat > ${{ github.workspace }}/.github/maven/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server>
+                <id>github</id>
+                <username>${{ github.actor }}</username>
+                <password>${{ secrets.GITHUB_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Build and Deploy to GitHub Packages
         run: mvn clean deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
