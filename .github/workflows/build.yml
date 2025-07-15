@@ -5,7 +5,7 @@ on:
     branches:
       - keycloak-gtb
     tags:
-      - 'v1.1.0'  # Déploiement sur tous les tags versionnés commençant par v
+      - 'v*'  # Par exemple v1.1.0
 
 jobs:
   build-deploy:
@@ -24,10 +24,9 @@ jobs:
     - name: Configure Maven settings.xml for GitHub Packages
       run: |
         mkdir -p $HOME/.m2
-        cat > $HOME/.m2/settings.xml <<EOF
-        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+        echo "<settings xmlns=\"http://maven.apache.org/SETTINGS/1.0.0\"
+              xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+              xsi:schemaLocation=\"http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd\">
           <servers>
             <server>
               <id>github</id>
@@ -35,11 +34,10 @@ jobs:
               <password>${{ secrets.GITHUB_TOKEN }}</password>
             </server>
           </servers>
-        </settings>
-        EOF
+        </settings>" > $HOME/.m2/settings.xml
 
     - name: Build and deploy Maven package
-      run: mvn clean deploy --settings $HOME/.m2/settings.xml
+      run: mvn clean deploy
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -51,9 +49,16 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build and push Docker image
-      run: |
-        IMAGE_NAME=ghcr.io/${{ github.repository_owner.toLowerCase() }}/digital-tmp-keycloak-config:${GITHUB_REF##*/}
-        docker build -t $IMAGE_NAME .
-        docker push $IMAGE_NAME
       env:
         GITHUB_REF: ${{ github.ref }}
+        GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+      run: |
+        TAG=${GITHUB_REF##*/}
+        TAG=${TAG#refs/tags/}       # nettoyage si ref est un tag
+        TAG=${TAG#refs/heads/}      # nettoyage si ref est une branche
+        OWNER_LOWER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+        IMAGE_NAME=ghcr.io/${OWNER_LOWER}/digital-tmp-keycloak-config:$TAG
+        echo "Docker image tag: $TAG"
+        echo "Docker image name: $IMAGE_NAME"
+        docker build -t $IMAGE_NAME .
+        docker push $IMAGE_NAME
