@@ -1,54 +1,48 @@
-name: Pipeline project
+name: Deploy Maven package on tag (keycloak-gtb branch)
 
 on:
   push:
-    branches:
-      - '**'  # écouter tous les push
-  pull_request:
-    branches:
-      - '**'  # écouter toutes les PR
-  workflow_dispatch:
-    inputs:
-      build_maven:
-        description: 'Enabled to build maven'
-        required: false
-        type: boolean
-        default: false
-      build_image:
-        description: 'Enabled to build docker image'
-        required: false
-        type: boolean
-        default: false
-      PRODUCT_RELEASE_VERSION:
-        description: Version du projet à releaser
-        required: false
-        type: string
-        default: ""
-      released:
-        description: Générer release
-        required: false
-        default: false
-        type: boolean
+    tags:
+      - 'v1.1.0'
 
 jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-  call:
-    uses: SN-DKR-DIG-TMP/digital-tmp-workflow-templates/.github/workflows/template-back-global.yml@main
-    with:
-      docker_owner: 'sn-dkr-dig-tmp'
-      docker_registry: ghcr.io
-      docker_image_name: digital-tmp-keycloak-config
-      workflow_file: 'build.yml'
-      environment_approved: 'manual'
-      docker_build: false
-      enabled_verification_changelog: true
-      released: ${{ github.event_name == 'workflow_dispatch' && inputs.released || false }}
-      build_maven: ${{ github.event_name == 'workflow_dispatch' && inputs.build_maven || false }}
-      build_image: false
-      PRODUCT_RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.PRODUCT_RELEASE_VERSION || '' }}
-    secrets:
-      GITHUB_USERNAME: 'SN-DKR-DIG-TMP'
-      CUSTOM_GITHUB_TOKEN: ${{ secrets.MAVEN_PAT }}
-      MAVEN_PAT: ${{ secrets.MAVEN_PAT }}
-      docker_registry_user: ${{ github.actor }}
-      docker_registry_password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check if tag points to commit in keycloak-gtb branch
+        id: check_branch
+        run: |
+          # Récupère le SHA du commit pointé par le tag
+          TAG_COMMIT=$(git rev-parse $GITHUB_REF)
+          echo "Tag commit: $TAG_COMMIT"
+          # Vérifie si ce commit est dans la branche keycloak-gtb
+          if git branch --contains $TAG_COMMIT | grep -q "keycloak-gtb"; then
+            echo "Commit is in keycloak-gtb branch."
+            echo "continue=true" >> $GITHUB_OUTPUT
+          else
+            echo "Commit is NOT in keycloak-gtb branch. Exiting."
+            echo "continue=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Fail if not on keycloak-gtb branch
+        if: steps.check_branch.outputs.continue != 'true'
+        run: |
+          echo "This tag is not on keycloak-gtb branch. Stopping workflow."
+          exit 1
+
+      - name: Set up JDK 21
+        if: steps.check_branch.outputs.continue == 'true'
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          server-id: github
+          settings-path: ${{ github.workspace }}/.github/maven
+
+      - name: Build and deploy to GitHub Packages
+        if: steps.check_branch.outputs.continue == 'true'
+        run: mvn clean deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
